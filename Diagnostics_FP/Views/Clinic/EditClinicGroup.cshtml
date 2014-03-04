@@ -1,0 +1,40 @@
+﻿@model Diagnostics_FP.Models.ClinicGroup
+@{
+    ViewBag.Title = "Редактирование клиники";
+}
+
+<h2>@ViewBag.Title</h2>
+<p class="error">@ViewBag.ConcurrencyErrorMessage</p>
+@using (Html.BeginForm())
+{
+    @Html.ValidationSummary(true)
+    <fieldset>
+        <legend>Внесите необходимые изменения и нажмите кнопку [Сохранить]</legend>
+        @Html.HiddenFor(model => model.ClinicGroupID)
+        @Html.HiddenFor(model => model.DateAdd)
+        @Html.HiddenFor(model => model.DateUpdate)
+        @Html.HiddenFor(model => model.Suser)
+        @Html.HiddenFor(model => model.Timestamp )
+        <div class="grid">
+            <div class="row span10">
+                <div class="span5">
+                    @Html.LabelFor(model => model.Description)
+                    @Html.EditorFor(model => model.Description)
+                    @Html.ValidationMessageFor(model => model.Description)
+                </div>
+                <div class="offset5">
+                    @Html.LabelFor(model => model.INN)
+                    @Html.EditorFor(model => model.INN)
+                    @Html.ValidationMessageFor(model => model.INN)
+                </div>
+            </div>
+        
+        </div>
+        <br />
+        <p>
+        <input type="submit" value="Сохранить" />
+        @Html.ActionLink("Назад", "ClinicGroupList", new { clinicGroupID = ViewBag.ClinicGroupIdReturn})
+            </p>
+    </fieldset>
+}
+

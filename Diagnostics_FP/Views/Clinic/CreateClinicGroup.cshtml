@@ -1,0 +1,40 @@
+﻿@model Diagnostics_FP.Models.ClinicGroup
+
+@{
+    ViewBag.Title = "Новая клиника";
+}
+
+<h2>Новая клиника</h2>
+
+<script src="@Url.Content("~/Scripts/jquery.validate.min.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")" type="text/javascript"></script>
+
+@using (Html.BeginForm()) {
+    @Html.ValidationSummary(true)
+    <fieldset>
+        <legend>Внесите необходимые данные и нажмите кнопку [Сохранить]</legend>
+        <div class="editor-label">
+            @Html.LabelFor(model => model.Description)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.Description)
+            @Html.ValidationMessageFor(model => model.Description)
+        </div>
+        <div class="editor-label">
+            @Html.LabelFor(model => model.INN )
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.INN)
+            @Html.ValidationMessageFor(model => model.INN)
+        </div>
+      
+        <br />
+                <p>
+        <input type="submit" value="Сохранить" />
+        @Html.ActionLink("Назад", "ClinicGroupList", new { clinicGroupID = 0 })
+            </p>
+    </fieldset>
+}
+
+
+

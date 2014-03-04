@@ -1,0 +1,188 @@
+﻿@model Diagnostics_FP.ViewModels.vwCreatePatientPaid
+@{
+    ViewBag.Title = "Регистрация нового пациента";
+}
+@using Diagnostics_FP.Models;
+
+<h3>Регистрация нового пациента</h3>
+@using ((Html.BeginForm("CreatePatientPaid", "Patient", FormMethod.Post,
+    new
+    {
+        id = "CreatePatientPaidFormID",
+        data_stateListAction = @Url.Action("ContractsList"),
+        data_contractListAction = @Url.Action("GetClinicContractId")
+    })))
+{
+    @Html.ValidationSummary(true)
+    <div class="grid">
+    @Html.HiddenFor(model => model.PatientObj.PatientID)
+    @Html.HiddenFor(model => model.SampleObj.SampleID)
+    <div class="row">
+    <div class="span5">
+        <fieldset>
+            <legend>Пациент</legend>
+            <table>
+            <tr>
+              <td>  @Html.LabelFor(model => model.PatientObj.Lastname)</td>
+                <td>@Html.EditorFor(model => model.PatientObj.Lastname)</td>
+                <td>@Html.ValidationMessageFor(model => model.PatientObj.Lastname)</td>
+            </tr>
+            <tr>
+                <td>@Html.LabelFor(model => model.PatientObj.Initials)</td>
+                <td>@Html.EditorFor(model => model.PatientObj.Initials)</td>
+                <td>@Html.ValidationMessageFor(model => model.PatientObj.Initials)</td>
+            </tr>
+            <tr>
+                <td>@Html.LabelFor(model => model.PatientObj.Birthdate)</td>
+                <td>@Html.EditorFor(model => model.PatientObj.Birthdate)</td>
+                <td>@Html.ValidationMessageFor(model => model.PatientObj.Birthdate)</td>
+            </tr>
+            <tr>
+                <td>@Html.LabelFor(model => model.PatientObj.Sex)</td>
+                <td>@Html.DropDownListFor(model => model.PatientObj.Sex, (SelectList)ViewData["selectSex"])</td>
+              
+            </tr>
+            <tr>
+                <td>@Html.LabelFor(model => model.PatientObj.PatientStatusTypeID)</td>
+                <td>@Html.DropDownListFor(model => model.PatientObj.PatientStatusTypeID, (SelectList)ViewData["selectPatientStatusTypes"])</td>
+                <td>@Html.ValidationMessageFor(model => model.PatientObj.PatientStatusTypeID)</td>
+            </tr>
+            </table>
+        </fieldset>
+    </div>
+    <div class="offset5">
+        <fieldset>
+            <legend>Образец</legend>
+            <table>
+            <tr>
+               <td> @Html.LabelFor(model => model.SampleObj.ClinicMaterialID)</td>
+               <td> @Html.DropDownListFor(model => model.SampleObj.ClinicMaterialID, (SelectList)ViewData["selectClinicMaterial"])</td>
+               <td> @Html.ValidationMessageFor(model => model.SampleObj.ClinicMaterialID)</td>
+            </tr>
+            <tr>
+                <td>@Html.LabelFor(model => model.SampleObj.DoctorID)</td>
+                <td>@Html.DropDownListFor(model => model.SampleObj.DoctorID, (SelectList)ViewData["selectDoctor"])</td>
+                <td>@Html.ValidationMessageFor(model => model.SampleObj.DoctorID)</td>
+            </tr>
+            <tr>
+                <td>@Html.LabelFor(model => model.SampleObj.ClinicID)</td>
+                <td>@Html.DropDownListFor(model => model.SampleObj.ClinicID, ViewData["selectClinic"] as SelectList, "Выберите направляющее отделение", new { id = "selectedClinicId" })</td>
+                <td>@Html.ValidationMessageFor(model => model.SampleObj.ClinicID)</td>
+            </tr>
+            <tr >
+                        <td>
+                        <label for="Contracts">Контракты</label>
+                        </td>
+                        <td>
+                        <select id="ContractId"  name="Contract"></select>
+                        </td>
+                        <td></td>
+            </tr>
+            <tr>
+                <td>@Html.LabelFor(model => model.SampleObj.DatetimeCapture)</td>
+                <td>@Html.EditorFor(model => model.SampleObj.DatetimeCapture)</td>
+                <td>@Html.ValidationMessageFor(model => model.SampleObj.DatetimeCapture)</td>
+            </tr>
+            <tr>
+                <td>@Html.LabelFor(model => model.SampleObj.DatetimeDelivery)</td>
+                <td>@Html.EditorFor(model => model.SampleObj.DatetimeDelivery)</td>
+                <td>@Html.ValidationMessageFor(model => model.SampleObj.DatetimeDelivery)</td>
+            </tr>
+            </table>
+        </fieldset>
+    </div>
+    </div>
+        <div class="row">
+    <div>
+        <fieldset>
+            <legend>Микробиологические анализы</legend>
+            <div>
+            <table>
+            <tr>
+            @{
+    int cnt = 0;
+    foreach (var item in Model.MBAnalysisList)
+    {
+        if (cnt++ % 2 == 0)
+        {
+                    @: </tr><tr>
+                    }
+                @:<td>
+                <input type="checkbox" name="selectedMBAnalysis" value="@item.MBAnalysisTypeID" />
+                @item.DescriptionRus.ToString()
+                @:</td>
+              }
+              @:</tr>
+              @:</table>
+            }
+       
+            </div>
+        </fieldset>
+    </div>
+    </div> 
+        <div class="row">
+    <div>
+    <fieldset>
+    <legend>Дополнительные услуги</legend>
+    <div>
+    <table>
+    <tr>
+    @{
+    int cntt = 0;
+    foreach (var item in Model.MBAdditionalServiceList)
+    {
+        if (cntt++ % 2 == 0)
+        {
+                    @: </tr><tr>
+                    }
+                @:<td>
+                <input type="checkbox" name="selectedAdditionalServices" value="@item.AdditionalServiceID" />
+                @item.Description.ToString()
+                @:</td>
+              }
+              @:</tr>
+              @:</table>
+            }
+       
+    </div>
+    </fieldset>
+    </div>
+    </div>
+   <div style="visibility: hidden">
+    @Html.EditorFor(model => model.SampleObj.ClinicContractID, null, new { id = "textClinicContractId" })
+    </div>
+    <div id="PriceArea"></div>
+    <br />
+            <p>
+            <input type="submit" value="Зарегистрировать" />
+            @Html.ActionLink("Назад", "PatientListPaid", null, new { @class = "button" })
+        </p>
+        </div>
+}
+<script type="text/javascript">
+    $(function () {
+        $('#selectedClinicId').change(function () {
+            var URL = $('#CreatePatientPaidFormID').data('stateListAction');
+            $.getJSON(URL + '/' + $('#selectedClinicId').val(), function (data) {
+                var items = '<option>Выберите контракт</option>';
+                $.each(data, function (i, state) {
+                    items += "<option value='" + state.Value + "'>" + state.Text + "</option>";
+                    // state.Value cannot contain ' character. We are OK because state.Value = cnt++;
+                });
+                $('#ContractId').html(items);
+            });
+        });
+    });
+</script>
+<script type="text/javascript" >
+    $(function () {
+        $('#ContractId').change(function () {
+            var obj = document.getElementById("SampleObj_ClinicContractID");
+            var htmlText = $('#ContractId').val();
+            $('#SampleObj_ClinicContractID').value = htmlText;
+            obj.value = htmlText;
+        });
+
+    });
+
+</script>

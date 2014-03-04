@@ -1,0 +1,39 @@
+﻿@model Diagnostics_FP.Models.MBAnalysisType  
+
+@{
+    ViewBag.Title = "Новый микробиологический анализ";
+}
+
+<h2>Добавление микробиологического анализа</h2>
+
+<script src="@Url.Content("~/Scripts/jquery.validate.min.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")" type="text/javascript"></script>
+
+@using (Html.BeginForm()) {
+    @Html.ValidationSummary(true)
+    <fieldset>
+        <legend>Внесите необходимые данные и нажмите кнопку [Сохранить]</legend>
+        <div class="editor-label">
+            @Html.LabelFor(model => model.Code)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.DescriptionRus)
+            @Html.ValidationMessageFor(model => model.DescriptionRus)
+        </div>
+        <div class="editor-label">
+            @Html.LabelFor(model => model.IsInUse)
+        </div>
+        <div class="editor-field">
+            @Html.DropDownList("IsInUse", (IEnumerable<SelectListItem>)ViewData["logicList"])
+            @Html.ValidationMessageFor(model => model.IsInUse  )
+        </div>
+        <br />
+                <p>
+        <input type="submit" value="Сохранить" />
+        @Html.ActionLink("Назад", "Index")
+            </p>
+    </fieldset>
+}
+
+
+

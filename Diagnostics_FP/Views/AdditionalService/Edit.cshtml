@@ -1,0 +1,51 @@
+﻿@model Diagnostics_FP.Models.AdditionalService 
+@{
+    ViewBag.Title = Model.Description ;
+}
+
+<h2>Редактирование дополнительной услуги @ViewBag.Title</h2>
+<p class="error">@ViewBag.ConcurrencyErrorMessage</p> 
+<script src="@Url.Content("~/Scripts/jquery.validate.min.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")" type="text/javascript"></script>
+@using (Html.BeginForm())
+{
+    @Html.ValidationSummary(true)
+    @Ajax.GlobalizationScript()
+    <fieldset>
+        <legend>Внесите необходимые изменения и нажмите кнопку [Сохранить]</legend>
+        @Html.HiddenFor(model => model.AdditionalServiceID)
+        @Html.HiddenFor(model => model.Timestamp  )
+        @Html.HiddenFor(model => model.DateAdd )
+        @Html.HiddenFor(model => model.DateUpdate )
+        @Html.HiddenFor(model => model.Suser )
+        <div class="editor-label">
+            @Html.LabelFor(model => model.Description)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.Description)
+            @Html.ValidationMessageFor(model => model.Description)
+        </div>
+        <div class="editor-label">
+            @Html.LabelFor(model => model.Price )
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.Price)
+            @Html.ValidationMessageFor(model => model.Price)
+        </div>
+         <div class="editor-label">
+            @Html.LabelFor(model => model.IsInUse)
+        </div>
+        <div class="editor-field">
+            @Html.DropDownListFor(model => model.IsInUse, ViewData["logicList"] as SelectList )
+            @Html.ValidationMessageFor(model => model.IsInUse  )
+        </div>
+        <br />
+        <p>
+        <input type="submit" value="Сохранить" />
+        @Html.ActionLink("Назад", "Index")
+</p>
+
+    </fieldset>
+        
+}
+

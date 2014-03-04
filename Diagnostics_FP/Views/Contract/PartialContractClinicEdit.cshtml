@@ -1,0 +1,31 @@
+﻿@model Diagnostics_FP.Models.ClinicsAndContract
+           @using Diagnostics_FP.Models;
+<div id="clinicAndContractEdit">
+   @using (Ajax.BeginForm(new AjaxOptions
+   {
+       HttpMethod = "POST",
+       UpdateTargetId = "contentArea",
+
+   }))
+    {
+        @Html.ValidationSummary(true)
+        <fieldset>
+            <legend>@ViewData["titleText"]</legend>
+            <div>
+            <p>
+            @Html.HiddenFor(model => model.ClinicContractID)
+            @Html.HiddenFor(model => model.ContractID)
+           
+            Выберите отделение 
+            </p>
+            <p>
+            @Html.DropDownListFor(model => model.ClinicID, (SelectList)ViewData["selectClinic"] )
+            </p>
+            <p>
+            <input type="submit" value="@ViewData["buttonText"]"  />
+          
+            </p>
+            </div>
+        </fieldset>
+    }
+</div>

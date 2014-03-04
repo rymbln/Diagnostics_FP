@@ -1,0 +1,37 @@
+﻿@model Diagnostics_FP.ViewModels.vwClinicWard 
+@{
+    ViewBag.Title = "About Us";
+}
+
+@section script{
+<script language="javascript" type="text/javascript">
+
+    $(document).ready(function () {
+
+        $("#ClinicGroupID").change(function () {
+
+            $.get('/Home/GetClinicsForClinicGroup/' + $(this).val(), function (response) {
+
+                var clinics = $.evalJSON(response);
+                var ddlSelectedClinic = $("#ClinicID");
+
+                // clear all previous options 
+                $("#ClinicID > option").remove();
+
+                // populate the products 
+                for (i = 0; i < clinics.length; i++) {
+                    ddlSelectedClinic.append($("<option />").val(clinics[i].Value).text(clinics[i].Text));
+                }
+            });
+        });
+
+    });
+</script>
+}
+<h2>
+    About</h2>
+
+    <div>
+ @*   @Html.DropDownListFor(model => model.ClinicGroupID , (SelectList)ViewData["selectClinicGroup"])  |  
+    @Html.DropDownList("ClinicID")*@
+    </div>

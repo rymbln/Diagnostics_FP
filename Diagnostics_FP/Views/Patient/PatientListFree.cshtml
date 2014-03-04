@@ -1,0 +1,216 @@
+﻿@model Diagnostics_FP.ViewModels.vwPatientListFree
+@using Diagnostics_FP.Helpers;
+@{
+    ViewBag.Title = ViewData["title"];
+}
+<h3>@ViewData["title"]</h3>
+@if (ViewData["Message"] != null)
+{
+    <blockquote>
+        @ViewData["Message"]
+    </blockquote>
+}
+<div>
+    @using (Html.BeginForm())
+    {
+        <p>
+            ФИО: @Html.TextBox("PatientFilter", ViewBag.PatientFilter as String)
+            &nbsp; № образца: @Html.TextBox("SampleFilter", ViewBag.SampleFilter as String)
+            &nbsp;
+            <input type="submit" value="Поиск" />
+            @Html.ActionLink("Сброс", "PatientListFree", new { queue = ViewBag.Queue }, new { @class = "button" })
+            @if (ViewBag.Queue == 1)
+            {
+                @Html.ActionLink("Все пациенты", "PatientListFree", null, new { @class = "button" })
+            }
+            else
+            {
+@* @Html.ActionLink("Очередь пациентов", "PatientListFree", new { queue = 1 }, null)*@
+                @Html.ActionLink("Очередь пациентов", "PatientListFree", new { queue = 1 }, new { @class = "button" })
+            }
+        </p>
+    }
+    <table class="stripped" style="width: auto">
+        <tr>
+            <th>
+            </th>
+            <th>@Html.ActionLink("№ обр.", "PatientListFree", new { sortOrder = ViewBag.SampleNumberSortParm, patientFilter = ViewBag.patientFilter, sampleFilter = ViewBag.sampleFilter, queue = ViewBag.Queue })
+            </th>
+            <th>@Html.ActionLink("ФИО", "PatientListFree", new { sortOrder = ViewBag.FIOSortParm, patientFilter = ViewBag.patientFilter, sampleFilter = ViewBag.sampleFilter, queue = ViewBag.Queue })
+            </th>
+            <th>@Html.ActionLink("Дата рожд.", "PatientListFree", new { sortOrder = ViewBag.BirthDateSortParm, patientFilter = ViewBag.CurrenFilter, sampleFilter = ViewBag.sampleFilter, queue = ViewBag.Queue })
+            </th>
+            <th>@Html.ActionLink("Пол", "PatientListFree", new { sortOrder = ViewBag.SexSortParm, patientFilter = ViewBag.CurrenFilter, sampleFilter = ViewBag.sampleFilter, queue = ViewBag.Queue })
+            </th>
+            <th>@Html.ActionLink("Клинич.материал", "PatientListFree", new { sortOrder = ViewBag.ClinicMaterialSortParm, patientFilter = ViewBag.CurrenFilter, sampleFilter = ViewBag.sampleFilter, queue = ViewBag.Queue })
+            </th>
+            <th>@Html.ActionLink("ЛПУ", "PatientListFree", new { sortOrder = ViewBag.ClinicSortParm, patientFilter = ViewBag.CurrenFilter, sampleFilter = ViewBag.sampleFilter, queue = ViewBag.Queue })
+            </th>
+            <th>@Html.ActionLink("Доктор", "PatientListFree", new { sortOrder = ViewBag.DoctorSortParm, patientFilter = ViewBag.CurrenFilter, sampleFilter = ViewBag.sampleFilter, queue = ViewBag.Queue })
+            </th>
+            <th>@Html.ActionLink("Дата доставки", "PatientListFree", new { sortOrder = ViewBag.DeliverySortParm, patientFilter = ViewBag.CurrenFilter, sampleFilter = ViewBag.sampleFilter, queue = ViewBag.Queue })
+            </th>
+            <th>@Html.ActionLink("Дата забора", "PatientListFree", new { sortOrder = ViewBag.CaptureSortParm, patientFilter = ViewBag.CurrenFilter, sampleFilter = ViewBag.sampleFilter, queue = ViewBag.Queue })
+            </th>
+            @if (Roles.IsUserInRole("Administrator"))
+            {
+                <th>
+                    Дата добавления
+                </th>
+                <th>
+                    Дата изменения
+                </th>
+                <th>
+                    Пользователь
+                </th>
+            }
+        </tr>
+        @foreach (var item in Model.SamplesList)
+        {
+            string selectedRow = "";
+            if (item.SampleID == ViewBag.SampleID)
+            {
+                selectedRow = "selected-row";
+            } 
+            <tr class="@selectedRow">
+                <td>
+                    @Ajax.ActionLink("Правка", "PartialPatientEdit", "Patient", new { sampleId = @item.SampleID, returnString = "PatientListFree", queue = ViewBag.Queue }, new AjaxOptions { HttpMethod = "GET", UpdateTargetId = "areaEdit" }, null)
+                    @Html.ActionLink("Подробно", "PatientListFree", new { sampleId = @item.SampleID, sortOrder = ViewBag.CurrentSort, patientFilter = ViewBag.patientFilter, sampleFilter = ViewBag.sampleFilter, queue = ViewBag.Queue })
+                </td>
+                <td>@item.SampleID
+                </td>
+                <td>@item.Patient.Lastname @item.Patient.Initials
+                </td>
+                <td>@DateTime.Parse(item.Patient.Birthdate.ToString()).ToShortDateString()
+                </td>
+                <td>@item.Patient.Sex
+                </td>
+                <td>@item.ClinicMaterial.Description
+                </td>
+                <td>@item.Clinic.ClinicGroup.Description - @item.Clinic.Description
+                </td>
+                <td>@item.Doctor.Lastname @item.Doctor.Initials
+                </td>
+                <td>@item.DatetimeDelivery
+                </td>
+                <td>@item.DatetimeCapture
+                </td>
+                @if (Roles.IsUserInRole("Administrator"))
+                {
+                    <td>@item.DateAdd
+                    </td>
+                    <td>@item.DateUpdate
+                    </td>
+                    <td>@item.Suser
+                    </td>
+                }
+            </tr>
+        }
+    </table>
+    <p>
+        @Html.PagingNavigator((int)Html.ViewData["PageNum"], (int)Html.ViewData["itemsCount"], (int)Html.ViewData["pageSize"], 9, (string)ViewBag.CurrentFilter, (string)ViewBag.CurrentSort)
+    </p>
+    <div id="areaEdit">
+    </div>
+    @if (ViewBag.SampleID != null)
+    {
+        <div id="patientAdditional">
+            <fieldset>
+                <legend>Анализы и результаты</legend>
+                <h4>
+                    Выбранные микробиологические анализы:</h4>
+                <table class="stripped" style="width: auto">
+                    <tr>
+                                   @if (Roles.IsUserInRole("Administrator"))
+                            {
+                                @: <th></th>
+                            }
+                        <th>
+                            Анализ
+                        </th>
+                        <th>
+                            Цена
+                        </th>
+                        <th>
+                            Статус
+                        </th>
+                        <th>
+                            Результат
+                        </th>
+                    </tr>
+                    @foreach (var item in Model.MBAnalysisListForSample)
+                    {
+                        <tr>
+                            @if (Roles.IsUserInRole("Administrator"))
+                            {
+                                <td>@Html.ActionLink("Перейти", "MBAnalysisEdit", "MBAnalysis", new { mbAnalysisId = item.MBAnalysisID, sampleId = ViewBag.SampleID, showRO = 1, returnString = "PatientListFree", queue = ViewBag.Queue }, null)
+                                </td>
+                            }
+                            <td>@Html.DisplayFor(model => item.MBAnalysisTypesDesc)
+                            </td>
+                            <td>@Html.DisplayFor(model => item.Price) руб.
+                            </td>
+                            <td>@Html.DisplayFor(model => item.MBStatusesDesc)
+                            </td>
+                            <td>@Html.DisplayFor(model => item.MBAnalysisResultsDesc)
+                            </td>
+                        </tr>
+                    }
+                </table>
+                <p>
+                    Итого выбрано анализов на сумму @Html.DisplayFor(model => model.totalAnalysis) руб.
+                </p>
+                <br />
+                <h4>
+                    Выбранные дополнительные услуги:</h4>
+                <table class="stripped" style="width: auto">
+                    <tr>
+                        <th>
+                            Доп.услуга
+                        </th>
+                        <th>
+                            Цена
+                        </th>
+                    </tr>
+                    @foreach (var itemAS in Model.AdditionalServicesForSample)
+                    {
+                        <tr>
+                            <td>@Html.DisplayFor(model => itemAS.AdditionalService.Description)
+                            </td>
+                            <td>@Html.DisplayFor(model => itemAS.AdditionalService.Price) руб.
+                            </td>
+                        </tr>
+                    }
+                </table>
+                <p>
+                    Итого выбрано доп.услуг на сумму @Html.DisplayFor(model => model.totalAddServices)
+                    руб. .</p>
+                <br />
+                <p>
+                    <strong>Итого по контракту @ViewData["contractText"] оказано услуг на сумму @Html.DisplayFor(model => model.totalAll)
+                        руб. </strong>
+                </p>
+              
+            </fieldset>
+        </div>
+    }
+    <br />
+</div>
+<div>
+    @Html.ActionLink("Новый", "CreatePatientFree", null, new { @class = "button" })
+    @if (ViewBag.SampleID != null)
+    { 
+        @Html.ActionLink("Печать договора", "PrintPatientContract", new { id = ViewBag.SampleID }, new { @class = "button" })
+    }
+    @if (ViewBag.CountReadyAnalysis > 0)
+    {
+        @Html.ActionLink("Печать результатов", "PrintPatientResult", new { id = ViewBag.SampleID }, new { @class = "button" })
+        
+    }
+        @if (ViewBag.CountNotReadyAnalysis > 0)
+    {
+        @Html.ActionLink("Удалить", "DeletePatient", new { patientId = ViewBag.SampleID, redirectAddr = "Free", queue = ViewBag.Queue }, new { onclick = "return confirm('Вы действительно хотите удалить ?')" , @class = "button"})
+        
+    }
+    
+</div>

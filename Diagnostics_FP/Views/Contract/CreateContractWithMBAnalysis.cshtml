@@ -1,0 +1,73 @@
+﻿@model Diagnostics_FP.ViewModels.vwCreateContractWithMBAnalysis 
+@{
+    ViewBag.Title = "Создание контракта - шаг 3 - определение прайс-листа";
+}
+@using Diagnostics_FP.Models;
+@using Diagnostics_FP.ViewModels;
+<h2>Создание контракта - шаг 3 - определение прайс-листа</h2>
+@using (Html.BeginForm())
+{
+    @Html.HiddenFor(model => model.ContractItem.ContractID )
+    @Html.HiddenFor(model => model.ContractItem.Description  )
+    @Html.HiddenFor(model => model.ContractItem.AccountNumber )
+
+       <fieldset>
+           <legend>Делайте что хотите, заебало уже всё!</legend>
+    <table>
+        <tr>
+            <th>@Html.LabelFor(model => model.ContractItem.Code)</th>
+            <th>@Html.LabelFor(model => model.ContractItem.Description)</th>
+            <th>@Html.LabelFor(model => model.ContractItem.AccountNumber)</th>
+            <th>@Html.LabelFor(model => model.ContractItem.DateStart)</th>
+            <th>@Html.LabelFor(model => model.ContractItem.DateEnd)</th>
+        </tr>
+        <tr>
+            <td>
+                @Html.DisplayFor(model => model.ContractItem.Code)
+            </td>
+            <td>
+                @Html.DisplayFor(model => model.ContractItem.Description)
+            </td>
+            <td>
+                @Html.DisplayFor(model => model.ContractItem.AccountNumber)
+            </td>
+            <td>
+                @Html.DisplayFor(model => model.ContractItem.DateStart)
+            </td>
+            <td>
+                @Html.DisplayFor(model => model.ContractItem.DateEnd)
+            </td>
+        </tr>
+    </table>
+           <input type="hidden" id="dataObj" value="Model" />
+    <h4>Установите цены для анализов, зарегистрированных в системе</h4>
+    <table>
+        <tr>
+            <th>Анализ</th>
+            <th>Тип расчета</th>
+            <th>Цена</th>
+        </tr>
+    @foreach (var item in Model.ContractMBAnalysis)
+        {
+            @:<tr>
+                @Html.Hidden("IDList", item.ContractAndMBAnalysisTypeID )
+                <td>@item.MBAnalysisType.DescriptionRus.ToString()</td>
+                <td>
+                    @Html.DropDownList("PaymentTypeID", (SelectList)ViewBag.SelectList)
+                    @Html.ValidationMessageFor(i => item.PaymentTypeID)
+                </td>  
+                <td>
+                    @Html.TextBox("Price", item.Price )
+                    @Html.ValidationMessageFor(i => item.Price)
+                </td>
+            @:</tr>
+        }
+ 
+        </table>
+    <br />
+    <p>
+        <input type="submit" value="Сохранить" />
+        @Html.ActionLink("Отмена", "Index")
+    </p>
+           </fieldset> 
+}

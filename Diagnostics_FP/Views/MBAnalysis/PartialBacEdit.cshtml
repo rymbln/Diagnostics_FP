@@ -1,0 +1,41 @@
+﻿@model Diagnostics_FP.Models.MBAnalysisBacterioscopy   
+<div id="ClinicalTestEditEdit">
+    @using (Ajax.BeginForm( new AjaxOptions { HttpMethod = "POST", UpdateTargetId = "contentArea"}))
+    {
+        @Html.ValidationSummary(true)
+        <fieldset>
+            <legend>@ViewData["titleText"]</legend>
+            <div>
+                <p>
+                    @Html.HiddenFor( m => m.MBAnalysisBacterioscopyID  )
+                    @Html.HiddenFor( m => m.MBAnalysisID   )
+                    Введите данные и нажмите кнопку [@ViewData["buttonText"]]
+                </p>
+                <div class="grid">
+                <div class="row">
+                    <div class="span4">
+                        <p>
+                            Включения
+                        </p>
+                        <p>
+                            @Html.DropDownListFor( m => m.MBBacterioscopyOrganismID   , (SelectList)ViewData["selectBacOrg"])</p>
+                    </div>
+                    <div class="span2">
+                    <p>Поле зрения</p>
+                    <p>@Html.DropDownListFor(m => m.ViewField , (SelectList)ViewData["selectViewField"])
+                                  </p>
+                    </div>
+                    <div class="span1">
+                    <p>Значение</p>
+                    <p>@Html.DropDownListFor(m => m.Value , (SelectList)ViewData["selectValue"])</p>
+                    </div>
+                
+                </div>
+                </div>
+            </div>
+         
+            <input type="submit" value="@ViewData["buttonText"]"  />
+            @Html.ActionLink("Назад", "MBAnalysisEdit", "MBAnalysis", new { sampleId = Model.MBAnalysi.SampleID, mbAnalysisId = Model.MBAnalysisID, showBac = 1 }, new { @class = "button" })
+        </fieldset>
+    }
+</div>

@@ -1,0 +1,50 @@
+﻿@model Diagnostics_FP.Models.ROandClinicalTest  
+<div id="ClinicalTestEditEdit">
+    @using (Ajax.BeginForm(new AjaxOptions { HttpMethod = "POST", UpdateTargetId = "contentArea" }))
+    {
+        @Html.ValidationSummary(true)
+        <fieldset>
+            <legend>@ViewData["titleText"]</legend>
+            <div>
+                <p>
+                    @Html.HiddenFor(m => m.ROID)
+                    @Html.HiddenFor(m => m.ROClinicalTestID)
+                    Введите данные и нажмите кнопку [@ViewData["buttonText"]]
+                </p>
+                <div class="grid">
+                    <div class="row">
+                        <div class="span4">
+                            <p>
+                                Антибиотик
+                            </p>
+                            <p>
+                                @Html.DropDownListFor(m => m.AntibioticTypeID, (SelectList)ViewData["selectAbType"])</p>
+                        </div>
+                        <div class="span3">
+                            <p>
+                                Значение</p>
+                            <p>@Html.EditorFor(m => m.ResultValue)
+                            </p>
+                        </div>
+                        <div class="span3">
+                            <p>
+                                Метод</p>
+                            <p>@Html.DropDownListFor(m => m.MethodID, (SelectList)ViewData["selectMethod"])</p>
+                        </div>
+                        <div class="span1">
+                            <p>
+                                SIR
+                            </p>
+                            <p>
+                                @Html.DropDownListFor(m => m.ResultSIR, (SelectList)ViewData["selectSIR"])
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+          
+            <input type="submit" value="@ViewData["buttonText"]"  />
+         @Html.ActionLink("Назад", "MBAnalysisEdit", "MBAnalysis", new { sampleId = Model.RO.SampleID, mbAnalysisId = Model.RO.MBAnalysisID, showRO = 1 }, new { @class = "button" })
+        </fieldset>
+    }
+</div>

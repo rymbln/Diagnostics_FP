@@ -1,0 +1,107 @@
+﻿@model Diagnostics_FP.ViewModels.vwMBAnalysisList
+@using Diagnostics_FP.Helpers;
+@{
+    ViewBag.Title = ViewData["title"];
+}
+<h3>@ViewData["title"]</h3>
+@if (ViewData["Message"] != null)
+{
+    <blockquote>@ViewData["Message"]</blockquote>
+}
+@using (Html.BeginForm())
+{
+    <p>
+        № образца: @Html.TextBox("sampleFilter", ViewBag.SampleFilter as string) &nbsp;
+        Анализ: @Html.TextBox("analysisFilter", ViewBag.AnalysisFilter as string) &nbsp;
+        Клин.материал: @Html.TextBox("clinicMaterialFilter", ViewBag.ClinicMaterialFilter as string)
+        &nbsp;
+        <input type="submit" value="Поиск" />
+        @Html.ActionLink("Сброс", "MBAnalysisList", new { queue = ViewBag.Queue }, new { @class = "button" })
+        @if (ViewBag.Queue == 1)
+        {
+            @Html.ActionLink("Все анализы", "MBAnalysisList", null,  new { @class = "button"})
+        }
+        else
+        {
+            @Html.ActionLink("Очередь анализов", "MBAnalysisList", new { queue = 1 },  new { @class = "button"})
+        }
+    </p>
+}
+@using (Html.BeginForm("SetStatusInWork","MBAnalysis", FormMethod.Post ))
+{
+<table class="stripped" style="width: auto">
+    <tr>
+        <th>
+        </th>
+
+                    @if (ViewBag.Queue == 1)
+                    {
+                                    <th></th>
+                    }
+        <th>@Html.ActionLink("№ обр.", "MBAnalysisList", new { sortOrder = ViewBag.SampleNumberSortParm, clinicMaterialFilter = ViewBag.ClinicMaterialFilter, analysisFilter = ViewBag.AnalysisFilter, sampleFilter = ViewBag.sampleFilter, queue = ViewBag.Queue })
+        </th>
+        <th>@Html.ActionLink("Тип анализа", "MBAnalysisList", new { sortOrder = ViewBag.MBAnalysisSortParm, clinicMaterialFilter = ViewBag.ClinicMaterialFilter, analysisFilter = ViewBag.AnalysisFilter, sampleFilter = ViewBag.sampleFilter, queue = ViewBag.Queue })
+        </th>
+        <th>@Html.ActionLink("Клин.материал", "MBAnalysisList", new { sortOrder = ViewBag.ClinicMaterialSortParm, clinicMaterialFilter = ViewBag.ClinicMaterialFilter, analysisFilter = ViewBag.AnalysisFilter, sampleFilter = ViewBag.sampleFilter, queue = ViewBag.Queue })
+        </th>
+        <th>@Html.ActionLink("Дата забора", "MBAnalysisList", new { sortOrder = ViewBag.CaptureSortParm, clinicMaterialFilter = ViewBag.ClinicMaterialFilter, analysisFilter = ViewBag.AnalysisFilter, sampleFilter = ViewBag.sampleFilter, queue = ViewBag.Queue })
+        </th>
+        <th>@Html.ActionLink("Дата доставки", "MBAnalysisList", new { sortOrder = ViewBag.DeliverySortParm, clinicMaterialFilter = ViewBag.ClinicMaterialFilter, analysisFilter = ViewBag.AnalysisFilter, sampleFilter = ViewBag.sampleFilter, queue = ViewBag.Queue })
+        </th>
+        <th>@Html.ActionLink("Статус", "MBAnalysisList", new { sortOrder = ViewBag.StatusSortParm, clinicMaterialFilter = ViewBag.ClinicMaterialFilter, analysisFilter = ViewBag.AnalysisFilter, sampleFilter = ViewBag.sampleFilter, queue = ViewBag.Queue })
+        </th>
+        <th>@Html.ActionLink("Результат", "MBAnalysisList", new { sortOrder = ViewBag.ResultSortParm, clinicMaterialFilter = ViewBag.ClinicMaterialFilter, analysisFilter = ViewBag.AnalysisFilter, sampleFilter = ViewBag.sampleFilter, queue = ViewBag.Queue })
+        </th>
+    </tr>
+    @foreach (var item in Model.MBAnalysisList)
+    {
+        string selectedRow = "";
+        if (item.MBAnalysisID == ViewBag.MBAnalysisID)
+        {
+            selectedRow = "selected-row";
+        }
+        <tr class="@selectedRow">
+            <td>
+                @Html.ActionLink("Перейти", "MBAnalysisEdit", new { mbAnalysisId = @item.MBAnalysisID, showRO = 1 , queue = ViewBag.Queue, returnString = "MBAnalysisList"})
+            </td>
+
+                    @if (ViewBag.Queue == 1)
+                    {
+                                    <td>
+                <input type="checkbox" name="selectedMBAnalysis" value="@item.MBAnalysisID" />
+            </td>
+                    }
+
+            <td>@item.SampleID
+            </td>
+            <td>@item.MBAnalysisType.DescriptionRus
+            </td>
+            <td>@item.Sample.ClinicMaterial.Description
+            </td>
+            <td>@item.Sample.DatetimeCapture
+            </td>
+            <td>@item.Sample.DatetimeDelivery
+            </td>
+            <td>@item.MBStatus.DescriptionRus
+            </td>
+            <td>@item.MBAnalysisResult.DescriptionRus
+            </td>
+        </tr>
+    }
+</table>
+if (ViewBag.Queue == 1)
+{
+    <input type="submit" value="Отправить в работу" />
+@*@Html.ActionLink("Отправить в работу", "SetStatusInWork", new { obj = Model.MBAnalysisList })*@
+}
+else
+{
+    <p>
+        @Html.PagingNavigatorMBAnalysis((int)Html.ViewData["PageNum"], (int)Html.ViewData["itemsCount"], (int)Html.ViewData["pageSize"],10, (string)ViewBag.CurrentSort, (string)ViewBag.ClinicMaterialFilter, (string)ViewBag.SampleFilter, (string)ViewBag.AnalysisFilter)
+    </p>
+}
+<div>
+
+</div>
+
+}

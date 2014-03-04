@@ -1,0 +1,16 @@
+﻿
+@{
+    ViewBag.Title = "MLAB 2.0 Стартовая страница";
+}
+
+@if (Request.IsAuthenticated)
+{
+    <h2>Добро пожаловать, <strong> @User.Identity.Name </strong></h2>
+    @: Руководство пользователя системы можно скачать  @Html.ActionLink("здесь", "GetUserManual", "Home")
+    
+}
+else
+{
+<h2>Добро пожаловать на стартовую страницу MLAB 2.0</h2>
+<p>Прежде чем начать работу, войдите в систему </p>
+}

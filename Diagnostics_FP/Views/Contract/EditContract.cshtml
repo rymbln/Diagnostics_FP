@@ -1,0 +1,115 @@
+﻿@model Diagnostics_FP.ViewModels.vwEditContract
+@{
+    ViewBag.Title = "EditContract";
+}
+<h3>
+    Редактирование контракта</h3>
+@using (Html.BeginForm())
+{
+    @Html.HiddenFor(model => model.selectedContract.ContractID)
+    <table>
+        <tr>
+            <th>@Html.LabelFor(model => model.selectedContract.Code)
+            </th>
+            <th>@Html.LabelFor(model => model.selectedContract.Description)
+            </th>
+            <th>@Html.LabelFor(model => model.selectedContract.AccountNumber)
+            </th>
+            <th>@Html.LabelFor(model => model.selectedContract.DateStart)
+            </th>
+            <th>@Html.LabelFor(model => model.selectedContract.DateEnd)
+            </th>
+        </tr>
+        <tr>
+            <td>
+                @Html.EditorFor(model => model.selectedContract.Code)
+            </td>
+            <td>
+                @Html.EditorFor(model => model.selectedContract.Description)
+            </td>
+            <td>
+                @Html.EditorFor(model => model.selectedContract.AccountNumber)
+            </td>
+            <td>
+                @Html.EditorFor(model => model.selectedContract.DateStart)
+            </td>
+            <td>
+                @Html.EditorFor(model => model.selectedContract.DateEnd)
+            </td>
+        </tr>
+    </table>
+    
+    <div id="tabSelector">
+    @Html.ActionLink("ЛПУ и отделения", "EditContract", new {id = Model.selectedContract.ContractID , showClinic = 1}) | 
+    @Html.ActionLink("Анализы и цены", "EditContract", new {id = Model.selectedContract.ContractID , showAnalysis = 1})
+    </div>
+ 
+  <div id="contractClinicList">
+  @if (Model.listClinicForContract != null)
+{
+    <fieldset>
+    <legend>ЛПУ и отделения, зарегистрированные в контракте </legend>
+    <table class="stripped" style="width: auto">
+    <tr>
+    <th></th>
+    <th>ЛПУ</th>
+    <th>Отделение</th>
+    </tr>
+    @foreach (var item in Model.listClinicForContract)
+    {
+        <tr>
+        <td>
+          @Ajax.ActionLink("Правка", "PartialContractClinicEdit", "Contract", new { clinicAndContractId = item.ClinicContractID }, new AjaxOptions { HttpMethod = "GET", UpdateTargetId = "EditArea" }, null) | 
+          @Html.ActionLink("Удалить", "ContractClinicDelete", "Contract", new { contractId = Model.selectedContract.ContractID, clinicId = item.ClinicID }, new { onclick = "return confirm('Вы действительно хотите удалить отделение " + item.Clinic.Description + " из контракта " + Model.selectedContract.Description + " ?')" })
+        </td>
+        <td>@Html.DisplayFor(model => item.Clinic.ClinicGroup.Description)</td>
+        <td>@Html.DisplayFor(model => item.Clinic.Description)</td>
+        </tr>
+    }
+    </table>
+             @Ajax.ActionLink("Добавить отделение", "PartialContractClinicEdit", "Contract", new {contractId = Model.selectedContract.ContractID  }, new AjaxOptions {HttpMethod = "GET", UpdateTargetId = "EditArea" }, null)
+    </fieldset>
+}
+ </div>
+    <div id="contractAnalysisList">
+    @if (Model.listMBAnalysisForContract != null)
+    {
+        <fieldset>
+        <legend>Микробиологические анализы, зарегистрированных в контракте</legend>
+        <table class="stripped" style="width:auto">
+            <tr>
+                <th></th>
+                <th>Название анализа</th>
+                <th>Тип оплаты</th>
+                <th>Стоимость</th>
+            </tr>
+                @foreach (var item in Model.listMBAnalysisForContract)
+                {
+                    <tr>
+                    <td>
+                      @Ajax.ActionLink("Правка", "PartialContractMBAnalysisEdit", "Contract", new { contractMBAnalysisId = item.ContractAndMBAnalysisTypeID }, new AjaxOptions { HttpMethod = "GET", UpdateTargetId = "EditArea" }, null) | 
+                      @Html.ActionLink("Удалить", "ContractMBAnalysisDelete", "Contract", new { contractAndMBAnalysisId = item.ContractAndMBAnalysisTypeID, contractId = item.ContractID }, new { onclick = "return confirm('Вы действительно хотите удалить анализ " + item.MBAnalysisType.DescriptionRus + " из контракта " + Model.selectedContract.Description + " ?')" })
+                    </td>
+                    <td>@Html.DisplayFor(model => item.MBAnalysisType.DescriptionRus )</td>
+                    <td>@Html.DisplayFor(model => item.PaymentType.Description )</td>
+                    <td>@Html.DisplayFor(model => item.Price ) руб.</td>
+                    </tr>
+                }
+        </table>
+         @Ajax.ActionLink("Добавить анализ", "PartialContractMBAnalysisEdit", "Contract", new { ContractId = Model.selectedContract.ContractID  }, new AjaxOptions {HttpMethod = "GET", UpdateTargetId = "EditArea" }, null)
+        </fieldset>
+    }
+        </div>
+       <div id="EditArea">
+
+</div>
+    
+    <div>
+    <br />
+    <input type="submit" value="Сохранить" />
+    @Html.ActionLink("Назад", "Index")
+    </div>
+}
+
+
+

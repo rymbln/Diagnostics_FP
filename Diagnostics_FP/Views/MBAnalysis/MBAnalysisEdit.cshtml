@@ -1,0 +1,220 @@
+﻿@model Diagnostics_FP.ViewModels.vwMBAnaysisEdit 
+@using Diagnostics_FP.Models;
+@{
+    ViewBag.Title = "Анализ";
+}
+<h3>
+    Анализ для образца № @Model.SampleObj.SampleNumber (@Model.SampleObj.ClinicMaterial.Description)
+    от пациента @Model.PatientObj.Lastname
+    @Model.PatientObj.Initials @DateTime.Parse(Model.PatientObj.Birthdate.ToString()).ToShortDateString()
+    г.р.</h3>
+@using (Html.BeginForm())
+{
+    @Html.HiddenFor(m => m.PatientObj.PatientID)
+    @Html.HiddenFor(m => m.SampleObj.SampleID)
+    @Html.HiddenFor(m => m.MBAnalysisObj.MBAnalysisID)
+    @Html.HiddenFor(m => m.MBAnalysisObj.SampleID)
+    @Html.HiddenFor(m => m.MBAnalysisObj.MBAnalysisTypeID)
+
+    <div id="editingAnalysis">
+        <blockquote>
+            <strong>@Model.MBAnalysisObj.MBAnalysisType.DescriptionRus</strong>
+        </blockquote>
+        <div class="grid">
+            <div class="row">
+                <div class="span5">
+                    Дата забора образца: @Model.SampleObj.DatetimeCapture
+                </div>
+                <div class="span5">
+                    Дата доставки образца: @Model.SampleObj.DatetimeDelivery
+                </div>
+            </div>
+        </div>
+        <div class="grid">
+            <div class="row">
+                <div class="span3">
+                    <p>
+                        Статус анализа
+                    </p>
+                    <p>
+                        @Html.DropDownListFor(m => m.MBAnalysisObj.MBStatusID, (SelectList)ViewData["selectStatuses"])
+                    </p>
+                </div>
+                <div class="span7">
+                    <p>
+                        Результат анализа
+                    </p>
+                    <p>
+                        @Html.DropDownListFor(m => m.MBAnalysisObj.MBAnalysisResultID, (SelectList)ViewData["selectResults"])
+                    </p>
+                </div>
+            </div>
+        </div>
+       
+    </div>
+    <div id="tabSelector">
+        @Html.ActionLink("Реидентификации", "MBAnalysisEdit", new { sampleId = Model.SampleObj.SampleID, mbAnalysisId = Model.MBAnalysisObj.MBAnalysisID, showRO = 1 }, new { @class = "button" })
+        @Html.ActionLink("Бактериоскопия", "MBAnalysisEdit", new { sampleId = Model.SampleObj.SampleID, mbAnalysisId = Model.MBAnalysisObj.MBAnalysisID, showBac = 1 }, new { @class = "button" })
+    </div>
+    <div>
+     <blockquote>
+            @ViewData["Message"]
+        </blockquote></div>
+    <div id="listRO">
+        @if (Model.listRO != null)
+        {
+            <fieldset>
+                <legend>Выделенные микроорганизмы</legend>
+                @{
+            int cnt = 0;
+            foreach (var item in Model.listRO)
+            {
+                cnt++;
+                    <fieldset>
+                        <legend>@cnt</legend>
+                        <div class="grid">
+                            <div class="row">
+                                <div class="span3">
+                                    <div>
+                                        <p>
+                                            <strong>Вид микроорганизма</strong>
+                                        </p>
+                                        <p>
+                                            @item.ROObj.OrganismType.DescriptionRus
+                                        </p>
+                                    </div>
+                                    <div>
+                                        <p>
+                                            <strong>Микробное число</strong>
+                                        </p>
+                                        <p>
+                                            @item.ROObj.BacterialLoadValue @item.ROObj.BacterialLoadUnit
+                                        </p>
+                                    </div>
+                                    <div>
+                                        <p>
+                                            <strong>Дата тестирования</strong>
+                                        </p>
+                                        <p>
+                                            @item.ROObj.DateOfReidentify
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="span8">
+                                    @if (item.listROClinicalTest != null)
+                                    {
+                                        <table class="stripped" style="width: auto">
+                                            <tr>
+                                                <th>
+                                                </th>
+                                                <th>
+                                                    Антибиотик
+                                                </th>
+                                                <th>
+                                                    Значение
+                                                </th>
+                                                <th>
+                                                    Метод
+                                                </th>
+                                                <th>
+                                                    SIR
+                                                </th>
+                                            </tr>
+                                            @foreach (var iRow in item.listROClinicalTest)
+                                            {
+                                                <tr>
+                                                    <td>
+                                                        @Ajax.ActionLink("Правка", "PartialClinicalTestEdit", "MBAnalysis", new { clinicalTestId = iRow.ROClinicalTestID, mbAnalysisId = Model.MBAnalysisObj.MBAnalysisID, roId = item.ROObj.ROID, text = item.ROObj.OrganismType.DescriptionEng }, new AjaxOptions { HttpMethod = "GET", UpdateTargetId = "areaRoEdit" }, null)
+                                                        |
+                                                        @Html.ActionLink("Удалить", "DeleteClinicalTest", "MBAnalysis", new { clinicalTestId = iRow.ROClinicalTestID, sampleId = item.ROObj.SampleID, mbAnalysisId = Model.MBAnalysisObj.MBAnalysisID }, new { onclick = "return confirm('Вы действительно хотите удалить ?')" })
+                                                    </td>
+                                                    <td>@iRow.AntibioticType.DescriptionEng
+                                                    </td>
+                                                    <td>@iRow.ResultValue
+                                                    </td>
+                                                    <td>@iRow.Method.DescriptionRus
+                                                    </td>
+                                                    <td>@iRow.ResultSIR
+                                                    </td>
+                                                </tr>
+                                            }
+                                        </table>
+                                        <div id="areaClinicalTestEdit">
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                            <div>
+                                @Ajax.ActionLink("Редактировать", "PartialROEdit", "MBAnalysis", new { sampleId = Model.MBAnalysisObj.SampleID, mbAnalysisId = Model.MBAnalysisObj.MBAnalysisID, roId = item.ROObj.ROID }, new AjaxOptions { HttpMethod = "GET", UpdateTargetId = "areaRoEdit" }, new { @class = "button" })
+                                @Html.ActionLink("Удалить", "DeleteRO", "MBAnalysis", new { roId = item.ROObj.ROID, mbAnalysisId = Model.MBAnalysisObj.MBAnalysisID, sampleId = Model.MBAnalysisObj.SampleID }, new { onclick = "return confirm('Вы действительно хотите удалить ?')", @class = "button" })
+                                @Ajax.ActionLink("Добавить тест", "PartialClinicalTestEdit", "MBAnalysis", new { mbAnalysisId = Model.MBAnalysisObj.MBAnalysisID, roId = item.ROObj.ROID, text = item.ROObj.OrganismType.DescriptionEng }, new AjaxOptions { HttpMethod = "GET", UpdateTargetId = "areaRoEdit" }, new { @class = "button" })
+                            </div>
+                        </div>
+                    </fieldset>
+            }
+                }
+                <br />
+                @Ajax.ActionLink("Добавить реидентификацию", "PartialROEdit", "MBAnalysis", new { sampleId = Model.MBAnalysisObj.SampleID, mbAnalysisId = Model.MBAnalysisObj.MBAnalysisID }, new AjaxOptions { HttpMethod = "GET", UpdateTargetId = "areaRoEdit" }, new { @class = "button" })
+            </fieldset>
+       
+            <div id="areaRoEdit">
+            </div>
+             
+        }
+    </div>
+    <div id="listBac">
+        @if (Model.listMBAnalysisBacterioscopy != null)
+        {
+            <fieldset>
+                <legend>Бактериологические характеристики по анализу</legend>
+                <table class="stripped" style="width: auto">
+                    <tr>
+                        <th>
+                        </th>
+                        <th>
+                            Включения
+                        </th>
+                        <th>
+                            Поле зрения
+                        </th>
+                        <th>
+                            Значение
+                        </th>
+                    </tr>
+                    @foreach (var bRow in Model.listMBAnalysisBacterioscopy)
+                    {
+                        <tr>
+                            <td>
+                                @Ajax.ActionLink("Правка", "PartialBacEdit", "MBAnalysis", new { mbAnalysisBacId = bRow.MBAnalysisBacterioscopyID, mbAnalysisId = Model.MBAnalysisObj.MBAnalysisID }, new AjaxOptions { HttpMethod = "GET", UpdateTargetId = "areaBacEdit" }, null)
+                                |
+                                @Html.ActionLink("Удалить", "DeleteBac", "MBAnalysis", new { mbAnalysisBacId = bRow.MBAnalysisBacterioscopyID, sampleId = Model.MBAnalysisObj.SampleID, mbAnalysisId = Model.MBAnalysisObj.MBAnalysisID }, new { onclick = "return confirm('Вы действительно хотите удалить ?')" })
+                            </td>
+                            <td>@bRow.MBBacterioscopyOrganismType.DescriptionRus
+                            </td>
+                            <td>@bRow.ViewField
+                            </td>
+                            <td>@bRow.Value
+                            </td>
+                        </tr>
+                    }
+                </table>
+                <br />
+                @Ajax.ActionLink("Добавить показатель", "PartialBacEdit", "MBAnalysis", new { sampleId = Model.MBAnalysisObj.SampleID, mbAnalysisId = Model.MBAnalysisObj.MBAnalysisID }, new AjaxOptions { HttpMethod = "GET", UpdateTargetId = "areaBacEdit" }, new { @class = "button" })
+            </fieldset>
+            <div id="areaBacEdit">
+            </div>
+        }
+    </div>
+    <br />
+    <input type="submit" value="Сохранить" />
+    if (ViewBag.Queue == 1)
+    {
+         @Html.ActionLink("Назад", "MBAnalysisList", "MBAnalysis", new { queue = 1}, new { @class = "button" })
+    }
+    else
+    {
+            @Html.ActionLink("Назад", "MBAnalysisList", "MBAnalysis", null, new { @class = "button" })
+    }
+
+
+}

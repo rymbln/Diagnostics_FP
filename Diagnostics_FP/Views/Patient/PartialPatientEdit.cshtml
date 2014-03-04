@@ -1,0 +1,114 @@
+﻿@model Diagnostics_FP.ViewModels.vwPatientEdit 
+<div id="PatientEdit">
+    @using (Html.BeginForm())
+    {
+        @Html.ValidationSummary(true)
+        @Html.HiddenFor(m => m.PatientID)
+        @Html.HiddenFor(m => m.SampleID)
+                  <fieldset>
+            <legend>Редактирование пациента</legend>
+        <div class="grid">
+            <div class="row">
+  
+                <div class="span5">
+                    <fieldset>
+                        <legend>Пациент</legend>
+                        <table>
+                            <tr>
+                                <td>
+                                Фамилия
+                                </td>
+                                <td>@Html.EditorFor(m => m.Lastname)
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                Инициалы
+                                </td>
+                                <td>@Html.EditorFor(m => m.Initials)
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                Дата рождения
+                                </td>
+                                <td>@Html.EditorFor(m => m.Birthdate)
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                Пол
+                                </td>
+                                <td>@Html.DropDownListFor(m => m.Sex, (SelectList)ViewData["selectSex"])
+                                </td>
+                            </tr>
+                        </table>
+                    </fieldset>
+                </div>
+                <div class="span5">
+                    <fieldset>
+                        <legend>Образец</legend>
+                        <table>
+                            <tr>
+                                <td>
+                                Клин.материал
+                                </td>
+                                <td>
+                                    @Html.DropDownListFor(m => m.ClinicMaterialID, (SelectList)ViewData["selectClinicMaterial"])
+                                </td>
+                                <td>
+                         
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                Доктор
+                                </td>
+                                <td>@Html.DropDownListFor(m => m.DoctorID, (SelectList)ViewData["selectDoctor"])
+                                </td>
+                                <td>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                Дата забора
+                                </td>
+                                <td>@Html.EditorFor(m => m.DatetimeCapture)
+                                </td>
+                                <td>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                Дата доставки
+                                </td>
+                                <td>@Html.EditorFor(m => m.DatetimeDelivery)
+                                </td>
+                                <td>
+                                </td>
+                            </tr>
+                        </table>
+                    </fieldset>
+                </div>
+                 
+              
+            </div>
+    
+               
+        </div>
+       <input type="submit" value="Сохранить"  />
+        @if ((string)ViewBag.ReturnString == "PatientListFree")
+        {
+                @Html.ActionLink("Назад", "PatientListFree", "Patient", new { sampleId = Model.SampleID, queue = ViewBag.Queue }, new { @class = "button" })
+        }
+        else
+        {
+            @Html.ActionLink("Назад", "PatientListPaid", "Patient", new { sampleId = Model.SampleID, queue = ViewBag.Queue }, new { @class = "button" })
+        }
+          </fieldset>
+            <div style="visibility: hidden">
+                @Html.TextBox("queue", ((int)ViewBag.Queue).ToString())
+                @Html.TextBox("returnString", (string)ViewBag.ReturnString)
+            </div>
+    }
+</div>

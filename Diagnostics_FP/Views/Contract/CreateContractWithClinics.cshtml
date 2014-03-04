@@ -1,0 +1,70 @@
+﻿@model Diagnostics_FP.ViewModels.vwCreateContractWithClinic 
+@{
+    ViewBag.Title = "Создание контракта - шаг 2 - определение отделений";
+}
+@using Diagnostics_FP.Models;
+<h2>Создание контракта - шаг 2 - определение отделений</h2>
+@using (Html.BeginForm())
+{
+    @Html.HiddenFor(model => model.ContractItem.ContractID)
+    <table>
+        <tr>
+            <th>@Html.LabelFor(model => model.ContractItem.Code)</th>
+            <th>@Html.LabelFor(model => model.ContractItem.Description)</th>
+            <th>@Html.LabelFor(model => model.ContractItem.AccountNumber)</th>
+            <th>@Html.LabelFor(model => model.ContractItem.DateStart)</th>
+            <th>@Html.LabelFor(model => model.ContractItem.DateEnd)</th>
+        </tr>
+        <tr>
+            <td>
+                @Html.DisplayFor(model => model.ContractItem.Code)
+            </td>
+            <td>
+                @Html.DisplayFor(model => model.ContractItem.Description)
+            </td>
+            <td>
+                @Html.DisplayFor(model => model.ContractItem.AccountNumber)
+            </td>
+            <td>
+                @Html.DisplayFor(model => model.ContractItem.DateStart)
+            </td>
+            <td>
+                @Html.DisplayFor(model => model.ContractItem.DateEnd)
+            </td>
+        </tr>
+    </table>
+    <h4>Выберите Отделения, на которые распространяется указанный контракт</h4>
+    {
+    List<SelectListItem> ClinicGroupList = new List<SelectListItem>();
+    List<String> clinicGroupList = new List<String>();
+    clinicGroupList = Model.ContractClinics.OrderBy(o => o.ClinicGroupDesc).Select(o => o.ClinicGroupDesc).Distinct().ToList<String>();
+    foreach (var item in clinicGroupList)
+    {
+    @:<h4>@item.ToString()</h4>
+    @:<table>
+@: <tr>
+        var clinics = Model.ContractClinics.Where(o => o.ClinicGroupDesc == item.ToString()).OrderBy(o => o.ClinicDesc).Distinct().ToList();
+        int cnt = 0;
+        foreach (var clinic in clinics)
+        {
+            
+            if (cnt++ % 3 == 0)
+            {
+                @: </tr> <tr>
+            }
+            @: <td>
+                <input type="checkbox" name="selectedClinics"
+                    value="@clinic.ClinicID" />
+                 @clinic.ClinicDesc.ToString() 
+                    @: </td>
+        }
+        @:</tr>
+    @:</table>
+        }
+}
+  <br />
+        <p>
+            <input type="submit" value="Далее" />
+            @Html.ActionLink("Отмена", "Index")
+        </p>
+}

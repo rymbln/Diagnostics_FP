@@ -1,0 +1,56 @@
+﻿@model IEnumerable<Diagnostics_FP.Models.ABTherapyType >
+@{
+    ViewBag.Title = "Типы терапии";
+}
+@using Diagnostics_FP.Helpers;
+<h2>Типы терапии</h2>
+@using (Html.BeginForm())
+{
+    <p>
+        Фильтр: @Html.TextBox("SearchString", ViewBag.CurrentFilter as String)
+        &nbsp;
+        <input type="submit" value="Поиск" />
+        @Html.ActionLink("Сброс", "Index", "ABTherapyType")
+    </p>
+}
+
+<table class="striped" style="width: auto">
+    <tr>
+        <th></th>
+        <th>@Html.ActionLink("Код", "index", new { sortOrder = ViewBag.CodeSortParm, currentFilter = ViewBag.CurrentFilter })</th>
+        <th>@Html.ActionLink("Название (Англ.)", "index", new { sortOrder = ViewBag.DescriptionEngSortParm, currentFilter = ViewBag.CurrentFilter })</th>
+        <th>@Html.ActionLink("Название (Рус.)", "index", new { sortOrder = ViewBag.DescriptionRusSortParm, currentFilter = ViewBag.CurrentFilter })</th>
+    </tr>
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.ActionLink("Правка", "Edit", new { id = item.ABTherapyTypeID }) | @Html.ActionLink("Удалить", "Delete", new { id = item.ABTherapyTypeID }, new { onclick = "return confirm('Вы действительно хотите удалить антибиотик?')" })
+
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Code)
+
+            </td>
+            <td>
+
+                @Html.DisplayFor(modelItem => item.DescriptionEng)
+
+            </td>
+            <td>
+            @Html.DisplayFor(modelItem => item.DescriptionRus)
+
+            </td>
+
+        </tr>
+    }
+</table>
+<p>
+    @Html.PagingNavigator((int)Html.ViewData["PageNum"],(int)Html.ViewData["itemsCount"], (int)Html.ViewData["pageSize"], 9 ,  (string)ViewBag.CurrentFilter, (string)ViewBag.CurrentSort) 
+</p>
+
+<div>
+    <br />
+    @Html.ActionLink("Новый Антибиотик", "Create")
+    @Html.ActionLink("Назад", "Index", "Knowall")
+</div>

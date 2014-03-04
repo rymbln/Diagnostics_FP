@@ -1,0 +1,46 @@
+﻿@model Diagnostics_FP.Models.RO 
+<div id="ROEdit">
+    @using (Ajax.BeginForm( new AjaxOptions { HttpMethod = "POST", UpdateTargetId = "contentArea"}))
+    {
+        @Html.ValidationSummary(true)
+        <fieldset>
+            <legend>@ViewData["titleText"]</legend>
+            <div>
+                <p>
+                    @Html.HiddenFor( m => m.ROID )
+                    @Html.HiddenFor( m => m.MBAnalysisID )
+                    @Html.HiddenFor( m => m.PrimaryProjectID )
+                    @Html.HiddenFor( m => m.RemoveReasonID )
+                    @Html.HiddenFor( m => m.SampleID )
+                    @Html.HiddenFor(m => m.MBStatusID )
+                    Введите данные и нажмите кнопку [@ViewData["buttonText"]]
+                </p>
+                <div class="grid">
+                <div class="row">
+                    <div class="span4">
+                        <p>
+                            Микроорганизм
+                        </p>
+                        <p>
+                            @Html.DropDownListFor( m => m.OrganismTypeID , (SelectList)ViewData["selectOrgType"])</p>
+                    </div>
+                    <div class="span3">
+                    <p>Микробное число</p>
+                    <p>@Html.DropDownListFor(m => m.BacterialLoadValue , (SelectList)ViewData["selectBacValue"])  
+                    @Html.DropDownListFor(m => m.BacterialLoadUnit , (SelectList)ViewData["selectBacUnit"])
+                    </p>
+                    </div>
+                    <div class="span2">
+                    <p>Дата тестирования</p>
+                    <p>@Html.EditorFor(m => m.DateOfReidentify)</p>
+                    </div>
+                </div>
+                </div>
+            </div>
+          
+            <input type="submit" value="@ViewData["buttonText"]"  />
+     
+            @Html.ActionLink("Назад", "MBAnalysisEdit", "MBAnalysis", new { sampleId = Model.SampleID, mbAnalysisId = Model.MBAnalysisID, showRO = 1}, new { @class = "button" })
+        </fieldset>
+    }
+</div>

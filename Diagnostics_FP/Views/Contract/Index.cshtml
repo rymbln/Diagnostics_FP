@@ -1,0 +1,112 @@
+﻿@model IEnumerable<Diagnostics_FP.Models.Contract>
+@{
+    ViewBag.Title = "Контракты";
+}
+@using Diagnostics_FP.Helpers;
+<h2>@ViewBag.Title</h2>
+<blockquote>
+@Html.ViewData["Message"]
+</blockquote>
+@using (Html.BeginForm())
+{
+    <p>
+        Фильтр: @Html.TextBox("SearchString", ViewBag.CurrentFilter as String)
+        &nbsp;
+        <input type="submit" value="Поиск" />
+        @Html.ActionLink("Сброс", "Index")
+    </p>
+}
+<table class="striped" style="width: auto">
+    <tr>
+        <th></th>
+        <th>@Html.ActionLink("Код", "Index", new { sortOrder = ViewBag.CodeSortParm, currentFilter = ViewBag.CurrentFilter })</th>
+        <th>@Html.ActionLink("Название", "Index", new { sortOrder = ViewBag.DescriptionSortParm, currentFilter = ViewBag.CurrentFilter })</th>
+        <th>@Html.ActionLink("Рег.Номер", "Index", new { sortOrder = ViewBag.AccountNumberSortParm, currentFilter = ViewBag.CurrentFilter })</th>
+        <th>@Html.ActionLink("Дата начала", "Index", new { sortOrder = ViewBag.DateStartSortParm, currentFilter = ViewBag.CurrentFilter })</th>
+        <th>@Html.ActionLink("Дата окончания", "Index", new { sortOrder = ViewBag.DateEndSortParm, currentFilter = ViewBag.CurrentFilter })</th>
+
+    </tr>
+    @foreach (var item in Model)
+    {
+                    string selectedRow = "";
+                    if (item.ContractID == ViewBag.contractId)
+                    {
+                        selectedRow = "selected-row";
+                    } 
+                    <tr class="@selectedRow">
+        
+            <td>
+                @Html.ActionLink("Подробно", "Index", new { contractId = item.ContractID , currentFilter = ViewBag.CurrentFilter, sortOrder = ViewBag.CurrentSort }) | 
+                @Html.ActionLink("Правка", "EditContract", new { id = item.ContractID }) | 
+                @Html.ActionLink("Удалить", "DeleteContract", new { id = item.ContractID }, new { onclick = "return confirm('Вы действительно хотите удалить?')" })
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Code)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Description)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.AccountNumber)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DateStart )
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DateEnd )
+            </td>
+        </tr>
+    }
+</table>
+<p>
+    @Html.PagingNavigator((int)Html.ViewData["PageNum"], (int)Html.ViewData["itemsCount"], (int)Html.ViewData["pageSize"], 9, (string)ViewBag.CurrentFilter, (string)ViewBag.CurrentSort)
+</p>
+        <div id="contractClinicList">
+  @if (ViewBag.listClinics != null)
+{
+    <fieldset>
+    <legend>ЛПУ и отделения, зарегистрированные в контракте </legend>
+    <table class="stripped" style="width: auto">
+    <tr>
+    <th>ЛПУ</th>
+    <th>Отделение</th>
+    </tr>
+    @foreach (var item2 in ViewBag.listClinics)
+    {
+        <tr>
+        <td>@item2.Clinic.ClinicGroup.Description</td>
+        <td>@item2.Clinic.Description</td>
+        </tr>
+    }
+    </table>
+    </fieldset>
+}
+ </div>
+    <div id="contractAnalysisList">
+    @if (ViewBag.listAnalysis != null)
+    {
+        <fieldset>
+        <legend>Микробиологические анализы, зарегистрированных в контракте</legend>
+        <table class="stripped" style="width:auto">
+            <tr>
+                <th>Название анализа</th>
+                <th>Тип оплаты</th>
+                <th>Стоимость</th>
+            </tr>
+                @foreach (var item3 in ViewBag.listAnalysis)
+                {
+                    <tr>
+                    <td>@item3.MBAnalysisType.DescriptionRus </td>
+                    <td>@item3.PaymentType.Description </td>
+                    <td>@item3.Price  руб.</td>
+                    </tr>
+                }
+        </table>
+          </fieldset>
+    }
+        </div>
+<div>
+    <br />
+    @Html.ActionLink("Новый", "CreateContract", "Contract", null , new { @class = "button" })
+    @Html.ActionLink("Назад", "Index", "Knowall", null, new { @class = "button" })
+</div>
